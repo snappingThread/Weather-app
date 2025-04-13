@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real-Time Rainfall Chart</title>
+    <title>Rainfall and Aurora Alert</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
@@ -32,8 +32,8 @@
         }
 
         .section1 canvas {
-            width: 90%; /* Adjust chart width */
-            max-width: 400px; /* Limit maximum width */
+            width: 90%;
+            max-width: 400px;
             height: auto;
         }
 
@@ -52,6 +52,11 @@
             grid-area: section3;
             background-color: #f8f9fa;
             padding: 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
         .section4,
@@ -74,7 +79,10 @@
         <canvas id="rainfallChart"></canvas>
     </div>
     <div class="section2">2</div>
-    <div class="section3">3</div>
+    <div class="section3">
+        <h2>Aurora Borealis Alert</h2>
+        <p id="auroraStatus">Fetching aurora data...</p>
+    </div>
     <div class="section4">4</div>
     <div class="section5">5</div>
     <div class="section6">6</div>
@@ -84,7 +92,7 @@
         const LAT = '51.5074';   // Example latitude (London)
         const LON = '-0.1278';   // Example longitude (London)
 
-        // Initialize the chart
+        // Initialize the rainfall chart
         const ctx = document.getElementById('rainfallChart').getContext('2d');
         const rainfallChart = new Chart(ctx, {
             type: 'line',
@@ -119,21 +127,19 @@
             }
         });
 
-        // Fetch rainfall data from the API
+        // Fetch rainfall data
         async function fetchRainfallData() {
             try {
                 const response = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${LAT}&lon=${LON}&exclude=current,minutely,daily,alerts&units=metric&appid=${API_KEY}`);
                 const data = await response.json();
 
-                // Extract hourly rainfall data
-                const hourlyData = data.hourly.slice(0, 24); // Get data for the next 24 hours
-                const labels = hourlyData.map((hour, index) => {
+                const hourlyData = data.hourly.slice(0, 24);
+                const labels = hourlyData.map(hour => {
                     const date = new Date(hour.dt * 1000);
                     return `${date.getHours()}:00`;
                 });
-                const rainfall = hourlyData.map(hour => hour.rain?.['1h'] || 0); // Get rainfall in mm or 0 if undefined
+                const rainfall = hourlyData.map(hour => hour.rain?.['1h'] || 0);
 
-                // Update chart
                 rainfallChart.data.labels = labels;
                 rainfallChart.data.datasets[0].data = rainfall;
                 rainfallChart.update();
@@ -142,9 +148,29 @@
             }
         }
 
+        // Fetch Aurora data from SolarHam API
+        async function fetchAuroraData() {
+            try {
+                const response = await fetch('https://services.swpc.noaa.gov/json/aurora.json');
+                const auroraData = await response.json();
+
+                const kpIndex = auroraData['kp_index'] || 0; // Get Kp index
+                const auroraChance = Math.min(100, kpIndex * 10); // Convert Kp to percentage chance
+
+                const auroraStatus = document.getElementById('auroraStatus');
+                auroraStatus.textContent = `Aurora Visibility Chance: ${auroraChance.toFixed(1)}%`;
+            } catch (error) {
+                console.error('Error fetching aurora data:', error);
+                document.getElementById('auroraStatus').textContent = 'Unable to fetch aurora data.';
+            }
+        }
+
         // Initial fetch and periodic updates
         fetchRainfallData();
         setInterval(fetchRainfallData, 1800000); // Update every 30 minutes
+
+        fetchAuroraData();
+        setInterval(fetchAuroraData, 1800000); // Update every 30 minutes
     </script>
 </body>
 </html>
