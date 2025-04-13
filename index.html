@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Custom Layout</title>
+    <title>Custom Layout with Line Graph</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             margin: 0;
@@ -23,12 +24,10 @@
 
         .section1 {
             grid-area: section1;
-            background-color: #007bff;
-            color: white;
+            background-color: black;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.5rem;
             padding: 20px;
         }
 
@@ -62,14 +61,58 @@
         .section4 { grid-area: section4; }
         .section5 { grid-area: section5; }
         .section6 { grid-area: section6; }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
     </style>
 </head>
 <body>
-    <div class="section1">1</div>
+    <div class="section1">
+        <canvas id="rainfallChart"></canvas>
+    </div>
     <div class="section2">2</div>
     <div class="section3">3</div>
     <div class="section4">4</div>
     <div class="section5">5</div>
     <div class="section6">6</div>
+
+    <script>
+        // Create the rainfall line chart
+        const ctx = document.getElementById('rainfallChart').getContext('2d');
+        const rainfallChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                datasets: [{
+                    label: 'Rainfall (cm)',
+                    data: [12, 19, 3, 5, 2, 3, 10, 15, 8, 9, 6, 4],
+                    borderColor: 'red',
+                    borderWidth: 2,
+                    tension: 0.4, // Smooth curve
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false,
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: 'white' },
+                        grid: { color: 'gray' }
+                    },
+                    y: {
+                        ticks: { color: 'white' },
+                        grid: { color: 'gray' }
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>
