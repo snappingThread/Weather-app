@@ -3,106 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Layout</title>
+    <title>Custom Layout</title>
     <style>
         body {
             margin: 0;
             font-family: Arial, sans-serif;
             display: grid;
             grid-template-areas:
-                "header header"
-                "left right"
-                "footer footer";
-            grid-template-rows: 100px 1fr 100px;
+                "section1 section2"
+                "section3 section4"
+                "section3 section5"
+                "section3 section6";
+            grid-template-rows: auto auto auto auto;
             grid-template-columns: 2fr 1fr;
-            height: 100vh;
             gap: 10px;
             padding: 10px;
+            height: 100vh;
         }
-        .header {
-            grid-area: header;
+
+        .section1 {
+            grid-area: section1;
             background-color: #007bff;
             color: white;
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 1.5rem;
-        }
-        .left {
-            grid-area: left;
-            background-color: #f8f9fa;
             padding: 20px;
         }
-        .right {
-            grid-area: right;
-            background-color: #e9ecef;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .footer {
-            grid-area: footer;
-            background-color: #343a40;
+
+        .section2 {
+            grid-area: section2;
+            background-color: #6c757d;
             color: white;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1rem;
+            font-size: 1.5rem;
+            padding: 20px;
         }
-        .box {
-            background-color: #fff;
-            border: 1px solid #ddd;
+
+        .section3 {
+            grid-area: section3;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+
+        .section4,
+        .section5,
+        .section6 {
+            background-color: #e9ecef;
             padding: 10px;
-            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
+
+        .section4 { grid-area: section4; }
+        .section5 { grid-area: section5; }
+        .section6 { grid-area: section6; }
     </style>
 </head>
 <body>
-    <script>
-        // Create header
-        const header = document.createElement('div');
-        header.className = 'header';
-        header.textContent = 'Header Section (1)';
-        document.body.appendChild(header);
-
-        // Create left content area
-        const left = document.createElement('div');
-        left.className = 'left';
-        left.textContent = 'Main Content Section (3)';
-        document.body.appendChild(left);
-
-        // Create right content area with multiple boxes
-        const right = document.createElement('div');
-        right.className = 'right';
-        
-        const box4 = document.createElement('div');
-        box4.className = 'box';
-        box4.textContent = 'Box 4';
-        right.appendChild(box4);
-        
-        const box5 = document.createElement('div');
-        box5.className = 'box';
-        box5.textContent = 'Box 5';
-        right.appendChild(box5);
-
-        const dropdown = document.createElement('select');
-        dropdown.className = 'box';
-        const option1 = document.createElement('option');
-        option1.textContent = 'Option 1';
-        dropdown.appendChild(option1);
-        const option2 = document.createElement('option');
-        option2.textContent = 'Option 2';
-        dropdown.appendChild(option2);
-        right.appendChild(dropdown);
-
-        document.body.appendChild(right);
-
-        // Create footer
-        const footer = document.createElement('div');
-        footer.className = 'footer';
-        footer.textContent = 'Footer Section (6)';
-        document.body.appendChild(footer);
-    </script>
+    <div class="section1">1</div>
+    <div class="section2">2</div>
+    <div class="section3">3</div>
+    <div class="section4">4</div>
+    <div class="section5">5</div>
+    <div class="section6">6</div>
 </body>
 </html>
