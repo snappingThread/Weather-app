@@ -154,18 +154,25 @@
             try {
                 const response = await fetch(apiUrl);
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-                const auroraData = await response.json();
 
-                // Use latitude and longitude for a more specific prediction
-                const auroraProbability = auroraData['North']['Probability'][Math.floor(LAT)] || 0;
+                const auroraData = await response.json();
+                console.log("Aurora Data:", auroraData); // Debugging: log the response
+
+                // Extract northern hemisphere probabilities
+                const probabilities = auroraData["North"]["Probability"];
+
+                // Adjust the logic for your latitude (example for latitude 51)
+                const latitudeIndex = Math.max(0, Math.min(probabilities.length - 1, 51)); // Example for latitude 51
+                const auroraChance = probabilities[latitudeIndex] || 0;
 
                 document.getElementById("auroraStatus").textContent =
-                    `Aurora Visibility Chance: ${auroraProbability.toFixed(1)}%`;
+                    `Aurora Visibility Chance: ${auroraChance.toFixed(1)}%`;
             } catch (error) {
                 console.error("Error fetching aurora data:", error);
-                document.getElementById("auroraStatus").textContent = "Unable to fetch aurora data.";
+                document.getElementById("auroraStatus").textContent =
+                    "Unable to fetch aurora data. Check the console for details.";
             }
         }
 
