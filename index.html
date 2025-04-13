@@ -28,7 +28,13 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 10px;
+        }
+
+        .section1 canvas {
+            width: 90%; /* Adjust chart width */
+            max-width: 400px; /* Limit maximum width */
+            height: auto;
         }
 
         .section2 {
@@ -61,11 +67,6 @@
         .section4 { grid-area: section4; }
         .section5 { grid-area: section5; }
         .section6 { grid-area: section6; }
-
-        canvas {
-            max-width: 100%;
-            height: auto;
-        }
     </style>
 </head>
 <body>
@@ -79,9 +80,9 @@
     <div class="section6">6</div>
 
     <script>
-        const API_KEY = 'YOUR_API_KEY'; // Replace with your OpenWeatherMap API key
-        const LAT = 'YOUR_LATITUDE';   // Replace with the latitude of your location
-        const LON = 'YOUR_LONGITUDE'; // Replace with the longitude of your location
+        const API_KEY = '50e90c74b20cf2f86240714bb36272ea'; // Pre-filled OpenWeatherMap API key
+        const LAT = '51.5074';   // Example latitude (London)
+        const LON = '-0.1278';   // Example longitude (London)
 
         // Initialize the chart
         const ctx = document.getElementById('rainfallChart').getContext('2d');
