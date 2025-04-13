@@ -148,20 +148,24 @@
             }
         }
 
-        // Fetch Aurora data from SolarHam API
+        // Fetch Aurora data
         async function fetchAuroraData() {
+            const apiUrl = "https://services.swpc.noaa.gov/json/ovation_aurora_latest.json";
             try {
-                const response = await fetch('https://services.swpc.noaa.gov/json/aurora.json');
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 const auroraData = await response.json();
 
-                const kpIndex = auroraData['kp_index'] || 0; // Get Kp index
-                const auroraChance = Math.min(100, kpIndex * 10); // Convert Kp to percentage chance
+                // Use latitude and longitude for a more specific prediction
+                const auroraProbability = auroraData['North']['Probability'][Math.floor(LAT)] || 0;
 
-                const auroraStatus = document.getElementById('auroraStatus');
-                auroraStatus.textContent = `Aurora Visibility Chance: ${auroraChance.toFixed(1)}%`;
+                document.getElementById("auroraStatus").textContent =
+                    `Aurora Visibility Chance: ${auroraProbability.toFixed(1)}%`;
             } catch (error) {
-                console.error('Error fetching aurora data:', error);
-                document.getElementById('auroraStatus').textContent = 'Unable to fetch aurora data.';
+                console.error("Error fetching aurora data:", error);
+                document.getElementById("auroraStatus").textContent = "Unable to fetch aurora data.";
             }
         }
 
