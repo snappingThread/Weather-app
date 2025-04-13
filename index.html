@@ -105,7 +105,7 @@
     </div>
 
     <script>
-        const API_KEY = '388408653ddbcca83b51e1378413120c'; // Updated OpenWeather API key
+        const API_KEY = '388408653ddbcca83b51e1378413120c'; // OpenWeather API Key
         const LAT = '51.5074';   // Example latitude (London)
         const LON = '-0.1278';   // Example longitude (London)
 
@@ -177,7 +177,7 @@
 
         // Fetch Aurora data
         async function fetchAuroraData() {
-            const apiUrl = "https://services.swpc.noaa.gov/json/ovation_aurora_latest.json";
+            const apiUrl = "http://auroraslive.io/api/v1/forecast";
             try {
                 const response = await fetch(apiUrl);
                 if (!response.ok) {
@@ -185,10 +185,7 @@
                 }
 
                 const auroraData = await response.json();
-                const probabilities = auroraData["North"]["Probability"];
-
-                const latitudeIndex = Math.max(0, Math.min(probabilities.length - 1, 51)); // Example for latitude 51
-                const auroraChance = probabilities[latitudeIndex] || 0;
+                const auroraChance = auroraData.chance || 0;
 
                 document.getElementById("auroraStatus").textContent =
                     `Aurora Visibility Chance: ${auroraChance.toFixed(1)}%`;
