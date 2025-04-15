@@ -11,8 +11,8 @@
             font-family: Arial, sans-serif;
             text-align: center;
             padding: 20px;
-            background-color: black; /* Set the background color to black */
-            color: white; /* Set the text color to white */
+            background-color: black;
+            color: white;
             margin: 0;
             overflow: hidden;
         }
@@ -21,8 +21,8 @@
             position: absolute;
             top: 20px;
             left: 20px;
-            width: 600px; /* Set the width of the box */
-            height: 500px; /* Set the height of the box */
+            width: 600px;
+            height: 500px;
             background-color: #222;
             padding: 20px;
             border-radius: 8px;
@@ -31,14 +31,14 @@
         }
 
         canvas {
-            width: 100%; /* Make the canvas fill the container width */
+            width: 100%;
             height: 300px;
         }
 
         #forecastContainer {
             width: 100%;
             padding: 10px;
-            background: #333; /* Set a darker background for the forecast container */
+            background: #333;
             border: 1px solid #ccc;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -48,7 +48,7 @@
         #forecastContainer h2 {
             font-size: 24px;
             margin-bottom: 15px;
-            color: white; /* Set heading text to white */
+            color: white;
         }
 
         #forecastContainer .weatherIcon {
@@ -87,7 +87,6 @@
             background-color: #45a049;
         }
 
-        /* Adjust error message box to contrast with the dark background */
         div[style*="background-color:red"] {
             background-color: #f44336;
             color: white;
@@ -95,7 +94,7 @@
     </style>
 </head>
 <body>
-    <h1>Real-Time Rainfall Data (cm)</h1>
+    <h1>Real-Time Rainfall Data (mm)</h1>
     <div class="content-container">
         <canvas id="rainfallChart"></canvas>
         <div id="forecastContainer">
@@ -109,14 +108,13 @@
     <button id="searchBtn">Search</button>
 
     <script>
-        // Chart.js setup for rainfall data
         const ctx = document.getElementById('rainfallChart').getContext('2d');
         const rainfallChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: [], // Time labels
                 datasets: [{
-                    label: 'Rainfall (cm)',
+                    label: 'Rainfall (mm)',
                     data: [], // Rainfall data
                     borderColor: 'blue',
                     borderWidth: 2,
@@ -132,24 +130,23 @@
                             text: 'Time'
                         },
                         grid: {
-                            color: 'red', // Set grid lines color to red
+                            color: 'red',
                         }
                     },
                     y: {
                         title: {
                             display: true,
-                            text: 'Rainfall (cm)'
+                            text: 'Rainfall (mm)' // Change label to mm
                         },
                         beginAtZero: true,
                         grid: {
-                            color: 'red', // Set grid lines color to red
+                            color: 'red',
                         }
                     }
                 }
             }
         });
 
-        // Get weather data from OpenWeatherMap API
         async function fetchWeatherData(city) {
             const apiKey = '388408653ddbcca83b51e1378413120c';
             const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
@@ -160,7 +157,7 @@
 
                 if (data.cod === 200) {
                     displayWeatherForecast(data);
-                    fetchRainfallData(city); // Call rainfall data after weather data is fetched
+                    fetchRainfallData(city);
                 } else {
                     alert('City not found');
                 }
@@ -175,7 +172,6 @@
             const temp = data.main.temp;
             const precipitation = data.rain ? `${data.rain['1h']}mm` : 'No rain';
 
-            // Set the weather icon
             document.getElementById('weatherIcon').innerHTML = `<img src="http://openweathermap.org/img/wn/${iconCode}.png" alt="${weatherDescription}" />`;
             document.getElementById('temperature').innerText = `${temp}°C`;
             document.getElementById('precipitation').innerText = `Precipitation: ${precipitation}`;
@@ -204,14 +200,14 @@
             const labels = rainfallChart.data.labels;
             const dataset = rainfallChart.data.datasets[0].data;
 
-            if (labels.length >= 10) { // Keep only the latest 10 data points
+            if (labels.length >= 10) {
                 labels.shift();
                 dataset.shift();
             }
 
             const currentTime = new Date().toLocaleTimeString();
             labels.push(currentTime);
-            dataset.push(rainfallData[0]); // Assuming only daily rainfall data is available
+            dataset.push(rainfallData[0]);
 
             rainfallChart.update();
         }
@@ -225,7 +221,6 @@
             }
         });
 
-        // Fetch default weather and rainfall data on page load
         fetchWeatherData('London');
     </script>
 </body>
