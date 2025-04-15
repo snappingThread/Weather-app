@@ -114,7 +114,7 @@
         .autocomplete-list div {
             padding: 10px;
             cursor: pointer;
-            color: black; /* Changed text color to black */
+            color: black;
         }
 
         .autocomplete-list div:hover {
@@ -139,7 +139,8 @@
     </div>
 
     <script>
-        const apiKey = 'MMCFTHY3TE953H72DESP54WML'; // Replace with your Visual Crossing API key
+        const visualCrossingApiKey = 'MMCFTHY3TE953H72DESP54WML'; // Replace with your Visual Crossing API key
+        const openWeatherApiKey = '388408653ddbcca83b51e1378413120c'; // Replace with your OpenWeatherMap API key
         const searchInput = document.getElementById('search');
         const autocompleteList = document.getElementById('autocomplete');
 
@@ -171,16 +172,20 @@
 
         // Function to fetch weather data from Visual Crossing
         async function fetchWeatherData(city) {
-            // Use Visual Crossing API to get weather data for the city
-            const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}?key=${apiKey}`;
+            const weatherUrl = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}?key=${visualCrossingApiKey}`;
 
             try {
-                const response = await fetch(url);
+                const response = await fetch(weatherUrl);
                 const data = await response.json();
 
                 if (data && data.currentConditions) {
                     const currentData = data.currentConditions;
-                    updateWeatherData(currentData);
+                    return {
+                        temperature: currentData.temp,
+                        humidity: currentData.humidity,
+                        pressure: currentData.pressure,
+                        city
+                    };
                 } else {
                     console.error("No weather data found.");
                 }
@@ -189,18 +194,38 @@
             }
         }
 
-        // Function to update the weather data on the page
-        function updateWeatherData(data) {
-            // Log the raw temperature data to check its unit
-            console.log("Raw temperature data:", data.temp);
+        // Function to fetch precipitation data from OpenWeatherMap
+        async function fetchPrecipitationData(city) {
+            const openWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${openWeatherApiKey}`;
 
-            // Convert temperature from Fahrenheit to Celsius
-            const temperature = fahrenheitToCelsius(data.temp);
+            try {
+                const response = await fetch(openWeatherUrl);
+                const data = await response.json();
+
+                if (data && data.rain) {
+                    return data.rain["1h"] || data.rain["3h"] || 0; // Rain in the last 1-3 hours
+                } else {
+                    return 0;
+                }
+            } catch (error) {
+                console.error("Error fetching precipitation data:", error);
+                return 0;
+            }
+        }
+
+        // Convert Fahrenheit to Celsius
+        function fahrenheitToCelsius(fahrenheit) {
+            return (fahrenheit - 32) * 5 / 9;
+        }
+
+        // Function to update the weather data on the page
+        async function updateWeatherData(data) {
+            const precipitation = await fetchPrecipitationData(data.city);
+
+            const temperature = fahrenheitToCelsius(data.temperature);
             const humidity = data.humidity;
-            const precipitation = data.precipitation;
             const pressure = data.pressure;
 
-            // Update the boxes with the fetched data
             document.getElementById('temperature').textContent = `Temperature: ${temperature.toFixed(1)}°C`;
             document.getElementById('humidity').textContent = `Humidity: ${humidity}%`;
             document.getElementById('precipitation').textContent = `Precipitation: ${precipitation}mm`;
@@ -208,22 +233,20 @@
         }
 
         // Function to confirm location and fetch weather data
-        function confirmLocation() {
+        async function confirmLocation() {
             const city = searchInput.value.trim();
             if (city) {
-                fetchWeatherData(city);
+                const weatherData = await fetchWeatherData(city);
+                if (weatherData) {
+                    await updateWeatherData(weatherData);
+                }
             } else {
                 alert("Please enter a city name.");
             }
         }
 
-        // Function to convert temperature from Fahrenheit to Celsius
-        function fahrenheitToCelsius(fahrenheit) {
-            return (fahrenheit - 32) * 5 / 9;
-        }
-
         // Initial weather data fetch for the default city
-        fetchWeatherData('London');
+        confirmLocation();
     </script>
 </body>
 </html>
