@@ -12,6 +12,7 @@
             font-family: Arial, sans-serif;
             text-align: center;
             padding: 20px;
+            position: relative; /* Ensures absolute positioning works inside the body */
         }
 
         canvas {
@@ -20,19 +21,15 @@
             margin: auto;
         }
 
+        /* Map container at the top-right corner */
         #map {
-            position: absolute;
+            position: fixed;
             top: 20px;
             right: 20px;
             width: 300px;
             height: 300px;
             border: 1px solid #ccc;
             z-index: 1000;
-        }
-
-        #mapContainer {
-            position: relative;
-            display: inline-block;
         }
 
         /* Style for the error log box */
@@ -55,13 +52,13 @@
 </head>
 <body>
     <h1>Real-Time Rainfall Data (cm)</h1>
-    <div id="mapContainer">
-        <div id="map"></div>
-    </div>
     <canvas id="rainfallChart"></canvas>
 
     <!-- Error log box -->
     <div id="errorLog"></div>
+
+    <!-- Map container -->
+    <div id="map"></div>
 
     <script>
         // Initialize Leaflet map
