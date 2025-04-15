@@ -29,10 +29,26 @@
             z-index: 1000;
             display: none;
         }
+
+        #cityInput {
+            padding: 8px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        #fetchButton {
+            padding: 8px 16px;
+            font-size: 16px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <h1>Real-Time Rainfall Data (cm)</h1>
+    <div>
+        <input type="text" id="cityInput" placeholder="Enter city name" />
+        <button id="fetchButton">Get Rainfall Data</button>
+    </div>
     <canvas id="rainfallChart"></canvas>
     <div id="errorLog"></div>
 
@@ -72,10 +88,11 @@
             }
         });
 
+        // Function to fetch rainfall data for the selected city
         async function fetchRainfallData(city) {
             try {
-                // OpenWeatherMap API URL (replace with your actual API key)
-                const apiKey = '388408653ddbcca83b51e1378413120c';
+                // OpenWeatherMap API URL with dynamically defined city
+                const apiKey = 'YOUR_API_KEY'; // Replace with your actual API key
                 const response = await fetch(`http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`);
                 const data = await response.json();
 
@@ -96,6 +113,7 @@
             }
         }
 
+        // Function to update the chart with new data
         function updateChart(time, rainfall) {
             const labels = rainfallChart.data.labels;
             const dataset = rainfallChart.data.datasets[0].data;
@@ -111,16 +129,31 @@
             rainfallChart.update();
         }
 
+        // Function to show error messages
         function showError(message) {
             const errorLog = document.getElementById('errorLog');
             errorLog.innerHTML = `<p>${message}</p>`;
             errorLog.style.display = 'block';
         }
 
-        // Fetch rainfall data for a city (you can change this to dynamic city input)
+        // Add event listener to the button
+        document.getElementById('fetchButton').addEventListener('click', function() {
+            const city = document.getElementById('cityInput').value.trim();
+
+            if (city) {
+                fetchRainfallData(city);
+            } else {
+                showError('Please enter a city name.');
+            }
+        });
+
+        // Fetch rainfall data for a default city on page load (optional)
         fetchRainfallData('London');
 
-        setInterval(() => fetchRainfallData('London'), 5000); // Fetch data every 5 seconds
+        setInterval(function() {
+            const city = document.getElementById('cityInput').value.trim() || 'London';
+            fetchRainfallData(city);
+        }, 5000); // Fetch data every 5 seconds
     </script>
 </body>
 </html>
