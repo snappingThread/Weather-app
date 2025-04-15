@@ -63,6 +63,8 @@
 
         .search-bar {
             position: relative;
+            display: flex;
+            align-items: center;
             border: 2px solid red;
             border-radius: 10px;
             background: #fff;
@@ -74,11 +76,26 @@
         }
 
         .search-bar input {
-            width: 100%;
+            flex-grow: 1;
             border: none;
             outline: none;
             font-size: 16px;
             padding: 5px;
+        }
+
+        .search-bar button {
+            margin-left: 10px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: red;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .search-bar button:hover {
+            background-color: darkred;
         }
 
         .autocomplete-list {
@@ -97,6 +114,7 @@
         .autocomplete-list div {
             padding: 10px;
             cursor: pointer;
+            color: black; /* Changed text color to black */
         }
 
         .autocomplete-list div:hover {
@@ -109,6 +127,7 @@
 
     <div class="search-bar">
         <input type="text" id="search" placeholder="Search for a city..." oninput="filterCities()">
+        <button onclick="confirmLocation()">Confirm</button>
         <div id="autocomplete" class="autocomplete-list"></div>
     </div>
 
@@ -145,7 +164,6 @@
                 div.onclick = () => {
                     searchInput.value = city;
                     autocompleteList.innerHTML = '';
-                    fetchWeatherData(city);
                 };
                 autocompleteList.appendChild(div);
             });
@@ -197,6 +215,16 @@
             document.getElementById('humidity').textContent = `Humidity: ${humidity}%`;
             document.getElementById('precipitation').textContent = `Precipitation: ${precipitation}mm`;
             document.getElementById('pressure').textContent = `Pressure: ${pressure}hPa`;
+        }
+
+        // Function to confirm location and fetch weather data
+        function confirmLocation() {
+            const city = searchInput.value.trim();
+            if (city) {
+                fetchWeatherData(city);
+            } else {
+                alert("Please enter a city name.");
+            }
         }
 
         // Initial weather data fetch for the default city
