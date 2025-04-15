@@ -178,6 +178,9 @@
                 const response = await fetch(weatherUrl);
                 const weatherData = await response.json();
 
+                // Log the entire response for inspection
+                console.log("Weather API Response:", weatherData);
+
                 if (weatherData && weatherData.currentConditions) {
                     const currentData = weatherData.currentConditions;
                     updateWeatherData(currentData);
@@ -189,14 +192,11 @@
             }
         }
 
-        // Function to convert temperature from Fahrenheit to Celsius
-        function fahrenheitToCelsius(fahrenheit) {
-            return (fahrenheit - 32) * 5 / 9;
-        }
-
         // Function to update the weather data on the page
         function updateWeatherData(data) {
-            // Extract data from the API response
+            // Log the raw temperature data to check its unit
+            console.log("Raw temperature data:", data.temp);
+
             let temperature = data.temp; // The temperature value we get might be in Fahrenheit
 
             // Check if temperature is in Fahrenheit and convert to Celsius
@@ -213,6 +213,11 @@
             document.getElementById('humidity').textContent = `Humidity: ${humidity}%`;
             document.getElementById('precipitation').textContent = `Precipitation: ${precipitation}mm`;
             document.getElementById('pressure').textContent = `Pressure: ${pressure}hPa`;
+        }
+
+        // Function to convert temperature from Fahrenheit to Celsius
+        function fahrenheitToCelsius(fahrenheit) {
+            return (fahrenheit - 32) * 5 / 9;
         }
 
         // Function to confirm location and fetch weather data
