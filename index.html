@@ -55,10 +55,6 @@
             background-color: #5a5a5a;
         }
 
-        #aurora-index {
-            background-color: #6a6a6a;
-        }
-
         h1 {
             font-size: 36px;
             text-align: center;
@@ -140,7 +136,6 @@
         <div id="humidity" class="weather-box">Humidity: --%</div>
         <div id="precipitation" class="weather-box">Precipitation: --mm</div>
         <div id="pressure" class="weather-box">Pressure: --hPa</div>
-        <div id="aurora-index" class="weather-box">Aurora Index: --</div>
     </div>
 
     <script>
@@ -218,28 +213,7 @@
             }
         }
 
-        // Function to fetch AuroraWatch UK data
-        async function fetchAuroraData() {
-            const auroraUrl = 'https://aurorawatch.lancs.ac.uk/feeds/aurora.rss';
-
-            try {
-                const response = await fetch(auroraUrl);
-                const data = await response.text();
-
-                // Parse the RSS feed (XML format)
-                const parser = new DOMParser();
-                const xml = parser.parseFromString(data, 'text/xml');
-                const status = xml.querySelector('item title').textContent;
-
-                // Determine aurora visibility
-                const visibility = status.includes('Aurora Alert') ? 'Visible' : 'Not Visible';
-                return visibility;
-            } catch (error) {
-                console.error("Error fetching aurora data:", error);
-            }
-        }
-
-        // Convert Fahrenheit to Celsius
+               // Convert Fahrenheit to Celsius
         function fahrenheitToCelsius(fahrenheit) {
             return (fahrenheit - 32) * 5 / 9;
         }
