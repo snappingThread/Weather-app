@@ -34,6 +34,23 @@
             position: relative;
             display: inline-block;
         }
+
+        /* Style for the error log box */
+        #errorLog {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 300px;
+            height: 150px;
+            border: 1px solid #f00;
+            background-color: rgba(255, 0, 0, 0.1);
+            color: red;
+            padding: 10px;
+            font-size: 12px;
+            overflow-y: scroll;
+            z-index: 1001;
+            display: none; /* Hidden by default */
+        }
     </style>
 </head>
 <body>
@@ -42,6 +59,9 @@
         <div id="map"></div>
     </div>
     <canvas id="rainfallChart"></canvas>
+
+    <!-- Error log box -->
+    <div id="errorLog"></div>
 
     <script>
         // Initialize Leaflet map
@@ -79,10 +99,11 @@
                     console.log('Updated Location:', selectedLocation);
                     fetchRainfallData();
                 } else {
-                    alert('Location not found. Please try again.');
+                    showError('Location not found. Please try again.');
                 }
             } catch (error) {
                 console.error('Error searching location:', error);
+                showError('Error searching location.');
             }
         }
 
@@ -146,12 +167,15 @@
                         updateChart(time, rainfall);
                     } else {
                         console.warn('No rainfall readings available.');
+                        showError('No rainfall readings available.');
                     }
                 } else {
                     console.warn('No stations found near the selected location.');
+                    showError('No stations found near the selected location.');
                 }
             } catch (error) {
                 console.error('Error fetching rainfall data:', error);
+                showError('Error fetching rainfall data.');
             }
         }
 
@@ -168,6 +192,12 @@
             dataset.push(rainfall);
 
             rainfallChart.update();
+        }
+
+        function showError(message) {
+            const errorLog = document.getElementById('errorLog');
+            errorLog.innerHTML = `<p>${message}</p>`;
+            errorLog.style.display = 'block';
         }
 
         setInterval(fetchRainfallData, 5000); // Fetch data every 5 seconds
