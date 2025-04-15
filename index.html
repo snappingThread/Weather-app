@@ -3,203 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather App with Visual Crossing API</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Weather Dashboard</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #121212;
             color: white;
-            text-align: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
         }
 
-        #weatherContainer {
-            display: inline-block;
-            padding: 20px;
-            background-color: #2c2c2c;
-            border-radius: 10px;
-            margin-top: 20px;
+        #weather-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
-        #weatherIcon img {
-            width: 50px;
-            height: 50px;
-        }
-
-        #rainfall {
-            font-size: 18px;
-            margin-top: 10px;
-        }
-
-        #cityInput {
-            padding: 10px;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-
-        #searchButton {
-            padding: 10px;
-            font-size: 16px;
-            margin-left: 10px;
-            cursor: pointer;
-        }
-
-        canvas {
-            max-width: 100%;
-            height: 400px;
-            margin-top: 20px;
-        }
-
-        #errorLog {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background-color: red;
+        .weather-box {
+            width: 200px;
+            height: 60px;
+            background-color: #333;
             color: white;
-            padding: 10px;
-            border-radius: 5px;
-            visibility: hidden;
+            text-align: center;
+            line-height: 60px;
+            font-size: 18px;
+            border: 2px solid red;
+            border-radius: 8px;
+        }
+
+        #temperature {
+            background-color: #2c2c2c;
+        }
+
+        #humidity {
+            background-color: #3a3a3a;
+        }
+
+        #precipitation {
+            background-color: #4e4e4e;
+        }
+
+        #pressure {
+            background-color: #5a5a5a;
+        }
+
+        h1 {
+            font-size: 36px;
+            text-align: center;
+            margin-top: 50px;
         }
     </style>
 </head>
 <body>
-    <h1>Weather Forecast</h1>
-    <div id="weatherContainer">
-        <div id="weatherIcon"></div>
-        <div id="temperature"></div>
-        <div id="conditions"></div>
-        <div id="rainfall"></div>
+    <h1>Weather Dashboard</h1>
+    <div id="weather-container">
+        <div id="temperature" class="weather-box">Temperature: --°C</div>
+        <div id="humidity" class="weather-box">Humidity: --%</div>
+        <div id="precipitation" class="weather-box">Precipitation: --mm</div>
+        <div id="pressure" class="weather-box">Pressure: --hPa</div>
     </div>
 
-    <input type="text" id="cityInput" placeholder="Enter city">
-    <button id="searchButton" onclick="searchWeather()">Search</button>
-
-    <div id="errorLog">No rainfall data available.</div>
-
-    <canvas id="rainfallChart"></canvas>
-
     <script>
-        const apiKey = 'MMCFTHY3TE953H72DESP54WML'; // Replace with your Visual Crossing API key
+        // Example data (you'll replace this with your API data)
+        const exampleWeatherData = {
+            temperature: 22,
+            humidity: 60,
+            precipitation: 5,
+            pressure: 1015
+        };
 
-        // Initialize Chart.js
-        const ctx = document.getElementById('rainfallChart').getContext('2d');
-        const rainfallChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: 'Rainfall (mm)',
-                    data: [],
-                    borderColor: 'blue',
-                    borderWidth: 2,
-                    fill: false
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Time'
-                        }
-                    },
-                    y: {
-                        title: {
-                            display: true,
-                            text: 'Rainfall (mm)'
-                        },
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-
-        // Fetch weather data from Visual Crossing API
-        async function fetchWeatherData(city) {
-            const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}?unitGroup=metric&key=${apiKey}`;
-            
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-
-                console.log("Weather Data:", data);
-
-                if (data.error) {
-                    alert('City not found');
-                } else {
-                    displayWeatherForecast(data);
-                    fetchRainfallData(data.location.lat, data.location.lon); // Fetch rainfall data using lat/lon
-                }
-            } catch (error) {
-                console.error('Error fetching weather data:', error);
-                showErrorLog('Error fetching weather data');
-            }
+        // Function to update weather boxes
+        function updateWeatherData(data) {
+            document.getElementById('temperature').textContent = `Temperature: ${data.temperature}°C`;
+            document.getElementById('humidity').textContent = `Humidity: ${data.humidity}%`;
+            document.getElementById('precipitation').textContent = `Precipitation: ${data.precipitation}mm`;
+            document.getElementById('pressure').textContent = `Pressure: ${data.pressure}hPa`;
         }
 
-        // Display weather forecast on the page
-        function displayWeatherForecast(data) {
-            const weatherIcon = data.currentConditions.icon;
-            const temperature = data.currentConditions.temp;
-            const weatherDescription = data.currentConditions.conditions;
-            const rainfall = data.currentConditions.precipMM;
-
-            document.getElementById('weatherIcon').innerHTML = `<img src="https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${weatherIcon}" alt="${weatherDescription}" />`;
-            document.getElementById('temperature').textContent = `${temperature}°C`;
-            document.getElementById('conditions').textContent = weatherDescription;
-            document.getElementById('rainfall').textContent = `Rainfall: ${rainfall} mm`;
-        }
-
-        // Fetch rainfall data from the API and update the chart
-        async function fetchRainfallData(lat, lon) {
-            const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${lat},${lon}?unitGroup=metric&key=${apiKey}`;
-
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-
-                console.log("Rainfall Data:", data);
-                
-                if (data.days) {
-                    const rainfallData = data.days.map(day => day.precipMM); // Get rainfall data in mm
-                    const timeData = data.days.map(day => new Date(day.datetime).toLocaleTimeString()); // Get time data
-
-                    updateRainfallChart(timeData, rainfallData);
-                } else {
-                    showErrorLog('No rainfall data available');
-                }
-            } catch (error) {
-                console.error('Error fetching rainfall data:', error);
-                showErrorLog('Error fetching rainfall data');
-            }
-        }
-
-        // Update the line chart with new rainfall data
-        function updateRainfallChart(labels, data) {
-            rainfallChart.data.labels = labels;
-            rainfallChart.data.datasets[0].data = data;
-            rainfallChart.update();
-        }
-
-        // Search weather for the entered city
-        function searchWeather() {
-            const city = document.getElementById('cityInput').value;
-            if (city) {
-                fetchWeatherData(city);
-            } else {
-                alert('Please enter a city');
-            }
-        }
-
-        // Show error log
-        function showErrorLog(message) {
-            const errorLog = document.getElementById('errorLog');
-            errorLog.textContent = message;
-            errorLog.style.visibility = 'visible';
-            setTimeout(() => {
-                errorLog.style.visibility = 'hidden';
-            }, 5000);
-        }
+        // Simulate fetching data (replace this with your API call)
+        setTimeout(() => {
+            updateWeatherData(exampleWeatherData);
+        }, 1000);  // Simulate API data load after 1 second
     </script>
 </body>
 </html>
