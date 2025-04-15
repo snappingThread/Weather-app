@@ -194,13 +194,8 @@
             // Log the raw temperature data to check its unit
             console.log("Raw temperature data:", data.temp);
 
-            let temperature = data.temp; // The temperature value we get might be in Fahrenheit
-
-            // Check if temperature is in Fahrenheit and convert to Celsius
-            if (data.tempunit === "F") {
-                temperature = fahrenheitToCelsius(temperature);
-            }
-
+            // Convert temperature from Fahrenheit to Celsius
+            const temperature = fahrenheitToCelsius(data.temp);
             const humidity = data.humidity;
             const precipitation = data.precipitation;
             const pressure = data.pressure;
