@@ -135,7 +135,7 @@
                     console.log('Nearest Station:', nearestStation);
 
                     // Fetch rainfall data from the nearest station
-                    const readingsResponse = await fetch(`${nearestStation.measures[0].@id}/readings?parameter=rainfall`);
+                    const readingsResponse = await fetch(`${nearestStation.measures[0]['@id']}/readings?parameter=rainfall`);
                     const readingsData = await readingsResponse.json();
 
                     if (readingsData.items && readingsData.items.length > 0) {
