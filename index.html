@@ -55,6 +55,10 @@
             background-color: #5a5a5a;
         }
 
+        #aurora-index {
+            background-color: #6a6a6a;
+        }
+
         h1 {
             font-size: 36px;
             text-align: center;
@@ -136,6 +140,7 @@
         <div id="humidity" class="weather-box">Humidity: --%</div>
         <div id="precipitation" class="weather-box">Precipitation: --mm</div>
         <div id="pressure" class="weather-box">Pressure: --hPa</div>
+        <div id="aurora-index" class="weather-box">Aurora Index: --</div>
     </div>
 
     <script>
@@ -213,6 +218,27 @@
             }
         }
 
+        // Function to fetch AuroraWatch UK data
+        async function fetchAuroraData() {
+            const auroraUrl = 'https://aurorawatch.lancs.ac.uk/feeds/aurora.rss';
+
+            try {
+                const response = await fetch(auroraUrl);
+                const data = await response.text();
+
+                // Parse the RSS feed (XML format)
+                const parser = new DOMParser();
+                const xml = parser.parseFromString(data, 'text/xml');
+                const status = xml.querySelector('item title').textContent;
+
+                // Determine aurora visibility
+                const visibility = status.includes('Aurora Alert') ? 'Visible' : 'Not Visible';
+                return visibility;
+            } catch (error) {
+                console.error("Error fetching aurora data:", error);
+            }
+        }
+
         // Convert Fahrenheit to Celsius
         function fahrenheitToCelsius(fahrenheit) {
             return (fahrenheit - 32) * 5 / 9;
@@ -221,6 +247,7 @@
         // Function to update the weather data on the page
         async function updateWeatherData(data) {
             const precipitation = await fetchPrecipitationData(data.city);
+            const auroraIndex = await fetchAuroraData();
 
             const temperature = fahrenheitToCelsius(data.temperature);
             const humidity = data.humidity;
@@ -228,25 +255,28 @@
 
             document.getElementById('temperature').textContent = `Temperature: ${temperature.toFixed(1)}°C`;
             document.getElementById('humidity').textContent = `Humidity: ${humidity}%`;
-            document.getElementById('precipitation').textContent = `Precipitation: ${precipitation}mm`;
-            document.getElementById('pressure').textContent = `Pressure: ${pressure}hPa`;
+            document.getElementById('pressure').textContent = `Pressure: ${pressure} hPa`;
+            document.getElementById('precipitation').textContent = `Precipitation: ${precipitation.toFixed(1)} mm`;
+            document.getElementById('aurora-index').textContent = `Aurora Index: ${auroraIndex}`;
         }
 
-        // Function to confirm location and fetch weather data
+        // Function to confirm and fetch weather data for a specific location
         async function confirmLocation() {
-            const city = searchInput.value.trim();
-            if (city) {
-                const weatherData = await fetchWeatherData(city);
-                if (weatherData) {
-                    await updateWeatherData(weatherData);
-                }
-            } else {
+            const city = searchInput.value;
+
+            if (!city) {
                 alert("Please enter a city name.");
+                return;
+            }
+
+            const weatherData = await fetchWeatherData(city);
+
+            if (weatherData) {
+                await updateWeatherData(weatherData);
+            } else {
+                alert("Could not fetch weather data. Please try again.");
             }
         }
-
-        // Initial weather data fetch for the default city
-        confirmLocation();
     </script>
 </body>
 </html>
