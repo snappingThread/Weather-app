@@ -221,8 +221,6 @@
         // Function to update the weather data on the page
         async function updateWeatherData(data) {
             const precipitation = await fetchPrecipitationData(data.city);
-            const auroraIndex = await fetchAuroraData();
-
             const temperature = fahrenheitToCelsius(data.temperature);
             const humidity = data.humidity;
             const pressure = data.pressure;
@@ -231,7 +229,6 @@
             document.getElementById('humidity').textContent = `Humidity: ${humidity}%`;
             document.getElementById('pressure').textContent = `Pressure: ${pressure} hPa`;
             document.getElementById('precipitation').textContent = `Precipitation: ${precipitation.toFixed(1)} mm`;
-            document.getElementById('aurora-index').textContent = `Aurora Index: ${auroraIndex}`;
         }
 
         // Function to confirm and fetch weather data for a specific location
