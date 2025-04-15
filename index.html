@@ -169,20 +169,17 @@
             });
         }
 
-        // Function to fetch weather data from Visual Crossing using the city name
+        // Function to fetch weather data from Visual Crossing
         async function fetchWeatherData(city) {
-            // Use the city name directly for the weather API
-            const weatherUrl = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}?key=${apiKey}`;
+            // Use Visual Crossing API to get weather data for the city
+            const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}?key=${apiKey}`;
 
             try {
-                const response = await fetch(weatherUrl);
-                const weatherData = await response.json();
+                const response = await fetch(url);
+                const data = await response.json();
 
-                // Log the entire response for inspection
-                console.log("Weather API Response:", weatherData);
-
-                if (weatherData && weatherData.currentConditions) {
-                    const currentData = weatherData.currentConditions;
+                if (data && data.currentConditions) {
+                    const currentData = data.currentConditions;
                     updateWeatherData(currentData);
                 } else {
                     console.error("No weather data found.");
@@ -215,11 +212,6 @@
             document.getElementById('pressure').textContent = `Pressure: ${pressure}hPa`;
         }
 
-        // Function to convert temperature from Fahrenheit to Celsius
-        function fahrenheitToCelsius(fahrenheit) {
-            return (fahrenheit - 32) * 5 / 9;
-        }
-
         // Function to confirm location and fetch weather data
         function confirmLocation() {
             const city = searchInput.value.trim();
@@ -228,6 +220,11 @@
             } else {
                 alert("Please enter a city name.");
             }
+        }
+
+        // Function to convert temperature from Fahrenheit to Celsius
+        function fahrenheitToCelsius(fahrenheit) {
+            return (fahrenheit - 32) * 5 / 9;
         }
 
         // Initial weather data fetch for the default city
