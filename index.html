@@ -12,7 +12,6 @@
             font-family: Arial, sans-serif;
             text-align: center;
             padding: 20px;
-            position: relative; /* Ensures absolute positioning works inside the body */
         }
 
         canvas {
@@ -21,9 +20,8 @@
             margin: auto;
         }
 
-        /* Map container at the top-right corner */
         #map {
-            position: fixed;
+            position: absolute;
             top: 20px;
             right: 20px;
             width: 300px;
@@ -32,33 +30,31 @@
             z-index: 1000;
         }
 
-        /* Style for the error log box */
+        #mapContainer {
+            position: relative;
+            display: inline-block;
+        }
+
         #errorLog {
-            position: fixed;
+            position: absolute;
             bottom: 20px;
             left: 20px;
-            width: 300px;
-            height: 150px;
-            border: 1px solid #f00;
-            background-color: rgba(255, 0, 0, 0.1);
-            color: red;
+            background-color: red;
+            color: white;
             padding: 10px;
-            font-size: 12px;
-            overflow-y: scroll;
-            z-index: 1001;
-            display: none; /* Hidden by default */
+            max-width: 400px;
+            z-index: 1000;
+            display: none;
         }
     </style>
 </head>
 <body>
     <h1>Real-Time Rainfall Data (cm)</h1>
+    <div id="mapContainer">
+        <div id="map"></div>
+    </div>
     <canvas id="rainfallChart"></canvas>
-
-    <!-- Error log box -->
     <div id="errorLog"></div>
-
-    <!-- Map container -->
-    <div id="map"></div>
 
     <script>
         // Initialize Leaflet map
@@ -75,7 +71,7 @@
         marker.on('dragend', function (event) {
             const position = marker.getLatLng();
             selectedLocation = { lat: position.lat, lon: position.lng };
-            console.log('Selected Location:', selectedLocation);
+            console.log('Selected Location:', selectedLocation);  // Log selected location
             fetchRainfallData();
         });
 
@@ -144,9 +140,13 @@
 
         async function fetchRainfallData() {
             try {
+                console.log('Fetching stations for location:', selectedLocation);  // Log API query
+                
                 // Fetch the nearest station to the selected location
                 const stationsResponse = await fetch(`https://environment.data.gov.uk/flood-monitoring/id/stations?lat=${selectedLocation.lat}&long=${selectedLocation.lon}`);
                 const stationsData = await stationsResponse.json();
+
+                console.log('Stations Data:', stationsData);  // Log the API response
 
                 if (stationsData.items && stationsData.items.length > 0) {
                     const nearestStation = stationsData.items[0];
@@ -155,6 +155,8 @@
                     // Fetch rainfall data from the nearest station
                     const readingsResponse = await fetch(`${nearestStation.measures[0]['@id']}/readings?parameter=rainfall`);
                     const readingsData = await readingsResponse.json();
+
+                    console.log('Rainfall Data:', readingsData);  // Log the rainfall data
 
                     if (readingsData.items && readingsData.items.length > 0) {
                         const latestReading = readingsData.items[0];
