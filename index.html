@@ -155,9 +155,11 @@
                 const response = await fetch(url);
                 const data = await response.json();
 
+                console.log("Weather Data:", data);
+
                 if (data.cod === 200) {
                     displayWeatherForecast(data);
-                    fetchRainfallData(city);
+                    fetchRainfallData(city, data.coord.lat, data.coord.lon); // Get coordinates from weather data
                 } else {
                     alert('City not found');
                 }
@@ -177,13 +179,15 @@
             document.getElementById('precipitation').innerText = `Precipitation: ${precipitation}`;
         }
 
-        async function fetchRainfallData(city) {
+        async function fetchRainfallData(city, lat, lon) {
             const apiKey = '388408653ddbcca83b51e1378413120c';
-            const url = `https://api.openweathermap.org/data/2.5/onecall?lat=35&lon=139&appid=${apiKey}&units=metric`; // Replace with correct latitude & longitude for the city
+            const url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
 
             try {
                 const response = await fetch(url);
                 const data = await response.json();
+
+                console.log("Rainfall Data:", data);
 
                 if (data.daily) {
                     const rainfallData = data.daily.map(day => day.rain ? day.rain : 0);
@@ -200,7 +204,10 @@
             const labels = rainfallChart.data.labels;
             const dataset = rainfallChart.data.datasets[0].data;
 
-            if (labels.length >= 10) {
+            // Debugging the rainfall data
+            console.log("Rainfall Data for Chart:", rainfallData);
+
+            if (labels.length >= 10) { // Keep only the latest 10 data points
                 labels.shift();
                 dataset.shift();
             }
